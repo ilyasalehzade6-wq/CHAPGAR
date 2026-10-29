@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="bg-white rounded-xl shadow overflow-hidden">
+  <div class="px-6 py-4 border-b"><h2 class="text-lg font-bold">تاریخچه چاپ</h2></div>
+  {% if jobs %}
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-slate-600"><tr><th class="p-3 text-right">فایل</th><th class="p-3 text-right">پرینتر</th><th class="p-3 text-right">وضعیت</th><th class="p-3 text-right">زمان</th></tr></thead>
+    <tbody>
+    {% for j in jobs %}
+      <tr class="border-t hover:bg-slate-50">
+        <td class="p-3">{{ j.original_name }}</td>
+        <td class="p-3">{{ j.printer or '—' }}</td>
+        <td class="p-3">{% if j.status == 'sent' %}<span class="text-emerald-600">موفق</span>{% elif j.status == 'failed' %}<span class="text-red-600">ناموفق</span>{% else %}<span class="text-amber-600">در انتظار</span>{% endif %}</td>
+        <td class="p-3 text-xs text-slate-500">{{ j.created_at[:16].replace('T', ' ') }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<div class="p-10 text-center text-slate-400">تاریخچه‌ای موجود نیست</div>{% endif %}
+</div>
+{% endblock %}

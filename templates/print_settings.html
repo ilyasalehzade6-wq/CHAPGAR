@@ -1,0 +1,341 @@
+{% extends 'base.html' %}
+{% block title %}تنظیمات چاپ — {{ job.original_name }}{% endblock %}
+{% block content %}
+
+<div class="flex items-center gap-3 mb-8">
+    <a href="/" class="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-gray-400 hover:text-white transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+    </a>
+    <div>
+        <h1 class="text-2xl font-bold text-white">تنظیمات چاپ</h1>
+        <p class="text-sm text-gray-400 font-mono">{{ job.original_name }}</p>
+    </div>
+</div>
+
+<div class="grid lg:grid-cols-12 gap-8 items-start">
+  
+  <!-- Left: Settings Form -->
+  <div class="lg:col-span-5 space-y-6">
+    
+    <form id="print-form" class="bg-surface/50 border border-white/5 rounded-2xl p-6 shadow-xl backdrop-blur-sm space-y-6">
+      
+      <!-- Printer Settings -->
+      <div>
+          <h2 class="text-sm font-bold text-gray-300 mb-4 pb-2 border-b border-white/5">تنظیمات پرینتر</h2>
+          <div class="space-y-4">
+              <div>
+                  <label class="block text-xs font-mono text-gray-500 mb-1.5">پرینتر مقصد</label>
+                  <select id="printer" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-gray-200 focus:border-vite-purple focus:ring-1 focus:ring-vite-purple outline-none transition-all font-mono">
+                    {% for p in printers %}<option value="{{ p }}">{{ p }}</option>{% endfor %}
+                  </select>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                  <div>
+                      <label class="block text-xs font-mono text-gray-500 mb-1.5">تعداد کپی</label>
+                      <input type="number" id="copies" value="1" min="1" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-gray-200 focus:border-vite-purple focus:ring-1 focus:ring-vite-purple outline-none transition-all font-mono">
+                  </div>
+                  <div>
+                      <label class="block text-xs font-mono text-gray-500 mb-1.5">اندازه کاغذ</label>
+                      <select id="paper-size" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-gray-200 focus:border-vite-purple focus:ring-1 focus:ring-vite-purple outline-none transition-all font-mono">
+                        <option value="A4">A4</option><option value="A5">A5</option><option value="Letter">Letter</option>
+                      </select>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      {% if not is_image %}
+      <div>
+          <h2 class="text-sm font-bold text-gray-300 mb-4 pb-2 border-b border-white/5">محدوده صفحات PDF</h2>
+          <input type="text" id="pdf-pages" placeholder="مثلا: 1-3, 5" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-gray-200 focus:border-vite-purple focus:ring-1 focus:ring-vite-purple outline-none transition-all font-mono">
+      </div>
+      {% endif %}
+
+      {% if is_image %}
+      <div>
+          <h2 class="text-sm font-bold text-gray-300 mb-4 pb-2 border-b border-white/5">چیدمان و اندازه</h2>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                  <label class="block text-xs font-mono text-gray-500 mb-1.5">عرض (میلی‌متر)</label>
+                  <input type="number" id="img-width" value="100" min="1" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-gray-200 focus:border-vite-purple focus:ring-1 focus:ring-vite-purple outline-none transition-all font-mono">
+              </div>
+              <div>
+                  <label class="block text-xs font-mono text-gray-500 mb-1.5">ارتفاع (میلی‌متر)</label>
+                  <input type="number" id="img-height" value="100" min="1" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-gray-200 focus:border-vite-purple focus:ring-1 focus:ring-vite-purple outline-none transition-all font-mono">
+              </div>
+              <div>
+                  <label class="block text-xs font-mono text-gray-500 mb-1.5">فاصله از بالا</label>
+                  <input type="number" id="pos-top" value="20" min="0" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-gray-200 focus:border-vite-purple focus:ring-1 focus:ring-vite-purple outline-none transition-all font-mono">
+              </div>
+              <div>
+                  <label class="block text-xs font-mono text-gray-500 mb-1.5">فاصله از چپ</label>
+                  <input type="number" id="pos-left" value="20" min="0" class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-gray-200 focus:border-vite-purple focus:ring-1 focus:ring-vite-purple outline-none transition-all font-mono">
+              </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+              <button type="button" id="btn-flip-h" class="bg-[#121212] border border-white/10 hover:border-vite-purple/50 text-gray-400 hover:text-vite-purple text-xs font-mono py-2.5 rounded-xl transition-all flex items-center justify-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg> آینه افقی
+              </button>
+              <button type="button" id="btn-flip-v" class="bg-[#121212] border border-white/10 hover:border-vite-purple/50 text-gray-400 hover:text-vite-purple text-xs font-mono py-2.5 rounded-xl transition-all flex items-center justify-center gap-2">
+                  <svg class="w-4 h-4 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg> آینه عمودی
+              </button>
+          </div>
+      </div>
+      {% endif %}
+
+      <!-- Image Processing -->
+      <div>
+          <h2 class="text-sm font-bold text-gray-300 mb-4 pb-2 border-b border-white/5">بهینه‌سازی تصویر</h2>
+          <div class="space-y-5">
+              <!-- Toggle Switch -->
+              <label class="flex items-center justify-between cursor-pointer group">
+                  <span class="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">چاپ سیاه و سفید (صرفه‌جویی در جوهر)</span>
+                  <div class="relative">
+                      <input type="checkbox" id="grayscale" class="sr-only peer">
+                      <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-vue-green peer-checked:after:bg-white"></div>
+                  </div>
+              </label>
+              
+              <div>
+                  <div class="flex justify-between mb-2">
+                      <label class="text-xs font-mono text-gray-500">روشنایی</label>
+                      <span id="val-brightness" class="text-xs font-mono text-vite-purple">1.0</span>
+                  </div>
+                  <input type="range" id="brightness" min="0.5" max="2.0" step="0.1" value="1.0" class="w-full accent-vite-purple h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer">
+              </div>
+              <div>
+                  <div class="flex justify-between mb-2">
+                      <label class="text-xs font-mono text-gray-500">کنتراست</label>
+                      <span id="val-contrast" class="text-xs font-mono text-vite-purple">1.0</span>
+                  </div>
+                  <input type="range" id="contrast" min="0.5" max="2.0" step="0.1" value="1.0" class="w-full accent-vite-purple h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer">
+              </div>
+          </div>
+      </div>
+
+      <!-- QR Code -->
+      <div>
+          <h2 class="text-sm font-bold text-gray-300 mb-4 pb-2 border-b border-white/5">کد QR</h2>
+          <input type="text" id="qr-text" placeholder="متن یا لینک..." class="w-full bg-[#121212] border border-white/10 rounded-xl p-3 text-sm text-gray-200 focus:border-vite-purple focus:ring-1 focus:ring-vite-purple outline-none transition-all font-mono">
+      </div>
+
+      <!-- Submit -->
+      <div class="pt-2">
+          <button type="button" id="submit-btn" class="w-full bg-gradient-to-r from-vite-purple to-vue-green hover:from-vite-purple hover:to-vue-green text-white font-bold text-sm py-3.5 rounded-xl transition-all shadow-[0_0_20px_rgba(100,108,255,0.3)] hover:shadow-[0_0_30px_rgba(100,108,255,0.5)] flex justify-center items-center gap-2 transform hover:-translate-y-0.5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            ارسال به پرینتر
+          </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Right: Preview -->
+  <div class="lg:col-span-7">
+      <div class="bg-surface/30 border border-white/5 rounded-2xl p-6 sticky top-24 shadow-2xl backdrop-blur-sm">
+          
+          <div class="flex items-center justify-between mb-6">
+              <h2 class="text-sm font-bold text-gray-300 flex items-center gap-2">
+                  <svg class="w-4 h-4 text-vite-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                  پیش‌نمایش زنده
+              </h2>
+              <div class="flex gap-1.5">
+                  <div class="w-3 h-3 rounded-full bg-white/10"></div>
+                  <div class="w-3 h-3 rounded-full bg-white/10"></div>
+                  <div class="w-3 h-3 rounded-full bg-vite-purple"></div>
+              </div>
+          </div>
+
+          {% if is_image %}
+          <div class="relative w-full min-h-[600px] flex items-center justify-center bg-[#121212] border border-white/5 rounded-xl overflow-hidden">
+              <div id="paper-canvas" class="bg-white shadow-[0_0_50px_rgba(0,0,0,0.5)] relative transition-all duration-300 overflow-hidden" style="width: 300px; height: 424px;">
+                  <img id="preview-img" class="absolute transform-origin top left hidden transition-all duration-200">
+                  <div id="guide-top" class="absolute border-t border-dashed border-vite-purple/50 w-full pointer-events-none"></div>
+                  <div id="guide-left" class="absolute border-r border-dashed border-vite-purple/50 h-full pointer-events-none"></div>
+              </div>
+          </div>
+          {% else %}
+          <div class="w-full h-[600px] rounded-xl overflow-hidden border border-white/5 bg-[#121212]">
+              <iframe src="/file/{{ job.id }}" class="w-full h-full border-0"></iframe>
+          </div>
+          {% endif %}
+      </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const submitBtn = document.getElementById('submit-btn');
+    
+    function getPayload() {
+        const payload = {
+            printer: document.getElementById('printer').value,
+            copies: document.getElementById('copies').value,
+            paper_size: document.getElementById('paper-size').value,
+            grayscale: document.getElementById('grayscale').checked,
+            brightness: document.getElementById('brightness').value,
+            contrast: document.getElementById('contrast').value,
+            qr_text: document.getElementById('qr-text').value,
+            pdf_pages: document.getElementById('pdf-pages') ? document.getElementById('pdf-pages').value : ''
+        };
+
+        {% if is_image %}
+        payload.img_width = document.getElementById('img-width').value;
+        payload.img_height = document.getElementById('img-height').value;
+        payload.pos_top = document.getElementById('pos-top').value;
+        payload.pos_left = document.getElementById('pos-left').value;
+        payload.flip_h = flipH;
+        payload.flip_v = flipV;
+        {% endif %}
+        return payload;
+    }
+
+    async function submitPrint() {
+        submitBtn.innerHTML = 'در حال پردازش...';
+        submitBtn.disabled = true;
+
+        try {
+            const res = await fetch('/print/{{ job.id }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(getPayload())
+            });
+            const data = await res.json();
+            if (data.success) {
+                window.location.href = '/';
+            } else {
+                showFloatingToast(data.message || 'خطا در پردازش', true);
+                submitBtn.innerHTML = 'ارسال به پرینتر';
+                submitBtn.disabled = false;
+            }
+        } catch (err) {
+            showFloatingToast('خطا در ارتباط با سرور', true);
+            submitBtn.innerHTML = 'ارسال به پرینتر';
+            submitBtn.disabled = false;
+        }
+    }
+
+    submitBtn.addEventListener('click', submitPrint);
+
+    const brightnessSlider = document.getElementById('brightness');
+    const contrastSlider = document.getElementById('contrast');
+    
+    brightnessSlider.addEventListener('input', (e) => {
+        document.getElementById('val-brightness').innerText = parseFloat(e.target.value).toFixed(1);
+        updatePreviewFilters();
+    });
+    contrastSlider.addEventListener('input', (e) => {
+        document.getElementById('val-contrast').innerText = parseFloat(e.target.value).toFixed(1);
+        updatePreviewFilters();
+    });
+    document.getElementById('grayscale').addEventListener('change', updatePreviewFilters);
+
+    {% if is_image %}
+    const paperCanvas = document.getElementById('paper-canvas');
+    const previewImg = document.getElementById('preview-img');
+    
+    const paperSizeSelect = document.getElementById('paper-size');
+    const imgWidthInput = document.getElementById('img-width');
+    const imgHeightInput = document.getElementById('img-height');
+    const posTopInput = document.getElementById('pos-top');
+    const posLeftInput = document.getElementById('pos-left');
+    const btnFlipH = document.getElementById('btn-flip-h');
+    const btnFlipV = document.getElementById('btn-flip-v');
+    const guideTop = document.getElementById('guide-top');
+    const guideLeft = document.getElementById('guide-left');
+
+    const paperSizes = { 'A4': { w: 210, h: 297 }, 'A5': { w: 148, h: 210 }, 'Letter': { w: 216, h: 279 } };
+
+    let scaleFactor = 1;
+    let flipH = false;
+    let flipV = false;
+
+    function updatePreviewFilters() {
+        const isGrayscale = document.getElementById('grayscale').checked;
+        const b = brightnessSlider.value;
+        const c = contrastSlider.value;
+        
+        let filterStr = `brightness(${b}) contrast(${c})`;
+        if (isGrayscale) filterStr += ' grayscale(100%)';
+        
+        previewImg.style.filter = filterStr;
+    }
+
+    window.onload = () => {
+        previewImg.src = "/raw_file/{{ job.id }}";
+        previewImg.onload = () => {
+            previewImg.classList.remove('hidden');
+            updatePaperCanvas();
+            updatePreviewFilters();
+        };
+        
+        fetch('/get_image_dims/{{ job.id }}')
+            .then(res => res.json())
+            .then(data => {
+                if (data.width && data.height) {
+                    imgWidthInput.value = data.width;
+                    imgHeightInput.value = data.height;
+                    updateImagePosition();
+                }
+            });
+    };
+
+    function updatePaperCanvas() {
+        const size = paperSizes[paperSizeSelect.value];
+        scaleFactor = 300 / size.w;
+        paperCanvas.style.width = `${size.w * scaleFactor}px`;
+        paperCanvas.style.height = `${size.h * scaleFactor}px`;
+        updateImagePosition();
+    }
+
+    function updateImagePosition() {
+        const w = parseFloat(imgWidthInput.value) || 0;
+        const h = parseFloat(imgHeightInput.value) || 0;
+        const top = parseFloat(posTopInput.value) || 0;
+        const left = parseFloat(posLeftInput.value) || 0;
+
+        let scaleX = flipH ? -1 : 1;
+        let scaleY = flipV ? -1 : 1;
+        previewImg.style.transform = `scale(${scaleX}, ${scaleY})`;
+
+        previewImg.style.width = `${w * scaleFactor}px`;
+        previewImg.style.height = `${h * scaleFactor}px`;
+        
+        if (flipH) {
+            previewImg.style.left = `${(left + w) * scaleFactor}px`; 
+        } else {
+            previewImg.style.left = `${left * scaleFactor}px`;
+        }
+        
+        if (flipV) {
+            previewImg.style.top = `${(top + h) * scaleFactor}px`;
+        } else {
+            previewImg.style.top = `${top * scaleFactor}px`;
+        }
+
+        guideTop.style.top = `${top * scaleFactor}px`;
+        guideLeft.style.left = `${left * scaleFactor}px`;
+    }
+
+    btnFlipH.addEventListener('click', () => {
+        flipH = !flipH;
+        btnFlipH.classList.toggle('border-vite-purple', flipH);
+        btnFlipH.classList.toggle('text-vite-purple', flipH);
+        updateImagePosition();
+    });
+
+    btnFlipV.addEventListener('click', () => {
+        flipV = !flipV;
+        btnFlipV.classList.toggle('border-vite-purple', flipV);
+        btnFlipV.classList.toggle('text-vite-purple', flipV);
+        updateImagePosition();
+    });
+
+    paperSizeSelect.addEventListener('change', updatePaperCanvas);
+    [imgWidthInput, imgHeightInput, posTopInput, posLeftInput].forEach(input => {
+        input.addEventListener('input', updateImagePosition);
+    });
+    {% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Hero Section -->
+<div class="text-center mb-16">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-vite-purple mb-6">
+        <span class="w-1.5 h-1.5 rounded-full bg-vite-purple"></span> نسل جدید چاپ
+    </div>
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">
+        چاپ سریع، دقیق و <span class="bg-gradient-to-r from-vite-purple to-vue-green bg-clip-text text-transparent">بی‌نقص</span>
+    </h1>
+    <p class="text-gray-400 text-lg max-w-xl mx-auto">اسناد خود را با بالاترین کیفیت و پیشرفته‌ترین موتور چاپ بومی مدیریت کنید.</p>
+</div>
+
+<!-- Upload Area -->
+<form method="post" action="/upload" enctype="multipart/form-data" class="max-w-3xl mx-auto mb-16">
+    <div class="relative group">
+        <input type="file" id="file-upload" name="files" multiple accept=".pdf,.png,.jpg,.jpeg" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="this.form.submit()">
+        
+        <!-- Dropzone -->
+        <div class="border-2 border-dashed border-white/20 bg-white/5 hover:bg-white/10 rounded-2xl p-10 flex flex-col items-center justify-center text-center transition-all group-hover:border-vite-purple/50 group-hover:shadow-[0_0_30px_rgba(100,108,255,0.15)]">
+            <div class="w-16 h-16 rounded-full bg-vite-purple/20 flex items-center justify-center text-vite-purple mb-4 group-hover:scale-110 transition-transform">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-1">برای آپلود کلیک کنید یا فایل را بکشید</h3>
+            <p class="text-sm text-gray-400 font-mono">PDF, JPG, PNG (حداکثر ۱۰۰ مگابایت)</p>
+        </div>
+    </div>
+</form>
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+  <div class="bg-surface/50 border border-white/5 rounded-2xl p-6 relative overflow-hidden group hover:border-vite-purple/30 transition-colors">
+    <div class="absolute -right-4 -top-4 w-24 h-24 bg-vite-purple/10 rounded-full blur-2xl group-hover:bg-vite-purple/20 transition-all"></div>
+    <p class="text-xs font-mono text-gray-500 mb-2 uppercase tracking-wider">کل اسناد</p>
+    <h3 class="text-4xl font-bold text-white">{{ stats.total }}</h3>
+  </div>
+  <div class="bg-surface/50 border border-white/5 rounded-2xl p-6 relative overflow-hidden group hover:border-vue-green/30 transition-colors">
+    <div class="absolute -right-4 -top-4 w-24 h-24 bg-vue-green/10 rounded-full blur-2xl group-hover:bg-vue-green/20 transition-all"></div>
+    <p class="text-xs font-mono text-gray-500 mb-2 uppercase tracking-wider">چاپ‌های موفق</p>
+    <h3 class="text-4xl font-bold text-vue-green">{{ stats.sent }}</h3>
+  </div>
+  <div class="bg-surface/50 border border-white/5 rounded-2xl p-6 relative overflow-hidden group hover:border-red-500/30 transition-colors">
+    <div class="absolute -right-4 -top-4 w-24 h-24 bg-red-500/10 rounded-full blur-2xl group-hover:bg-red-500/20 transition-all"></div>
+    <p class="text-xs font-mono text-gray-500 mb-2 uppercase tracking-wider">خطاها</p>
+    <h3 class="text-4xl font-bold text-red-500">{{ stats.failed }}</h3>
+  </div>
+</div>
+
+<!-- List Table -->
+<div class="bg-surface/30 border border-white/5 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-sm">
+  <div class="px-6 py-5 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+    <h2 class="text-sm font-bold text-gray-300">اسناد اخیر</h2>
+    <span class="font-mono text-xs bg-white/5 text-gray-400 px-3 py-1 rounded-lg border border-white/5">{{ docs|length }} فایل</span>
+  </div>
+  
+  {% if docs %}
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-right">
+      <thead class="text-xs font-mono text-gray-500 border-b border-white/5 bg-white/[0.01]">
+        <tr>
+            <th class="px-6 py-4 font-medium">نام فایل</th>
+            <th class="px-6 py-4 font-medium">وضعیت</th>
+            <th class="px-6 py-4 font-medium">تاریخ ثبت</th>
+            <th class="px-6 py-4 font-medium text-left">عملیات</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/5">
+      {% for d in docs %}
+        <tr class="hover:bg-white/[0.03] transition-colors group">
+          <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-vite-purple transition-colors">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path></svg>
+                  </div>
+                  <span class="font-medium text-gray-200">{{ d.original_name }}</span>
+              </div>
+          </td>
+          <td class="px-6 py-4 font-mono text-xs">
+            {% if d.status == 'sent' %}<span class="text-vue-green bg-vue-green/10 border border-vue-green/20 px-2.5 py-1 rounded-md">ارسال شده</span>
+            {% elif d.status == 'failed' %}<span class="text-red-400 bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded-md">خطا</span>
+            {% else %}<span class="text-yellow-400 bg-yellow-500/10 border border-yellow-500/20 px-2.5 py-1 rounded-md">در انتظار</span>{% endif %}
+          </td>
+          <td class="px-6 py-4 text-gray-500 font-mono text-xs">{{ d.created_at[:16].replace('T', ' ') }}</td>
+          <td class="px-6 py-4">
+            <div class="flex justify-end gap-2 opacity-50 group-hover:opacity-100 transition-opacity">
+              <a href="/print/{{ d.id }}" class="text-xs font-medium bg-white/5 hover:bg-vite-purple/20 text-gray-300 hover:text-vite-purple border border-white/10 px-3 py-1.5 rounded-lg transition-all">تنظیمات</a>
+              <a href="/file/{{ d.id }}" target="_blank" class="text-xs font-medium bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 px-3 py-1.5 rounded-lg transition-all">مشاهده</a>
+              <form method="post" action="/delete/{{ d.id }}" onsubmit="return confirm('آیا مطمئن هستید؟')">
+                <button class="text-xs font-medium bg-white/5 hover:bg-red-500/20 text-gray-300 hover:text-red-400 border border-white/10 hover:border-red-500/30 px-3 py-1.5 rounded-lg transition-all">حذف</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="p-20 text-center flex flex-col items-center">
+      <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-gray-500 mb-4">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+      </div>
+      <p class="text-gray-400">هیچ فایلی یافت نشد. اولین سند خود را آپلود کنید.</p>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+    document.getElementById('file-upload').addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            const dropzoneText = this.parentElement.querySelector('h3');
+            dropzoneText.innerHTML = `<span class="text-vite-purple">${e.target.files.length} فایل</span> انتخاب شد. در حال آپلود...`;
+        }
+    });
+</script>
+{% endblock %}

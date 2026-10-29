@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+{% block title %}چیدمان پیشرفته — چاپ‌یار{% endblock %}
+{% block content %}
+
+<div class="grid lg:grid-cols-12 gap-8">
+  
+  <!-- پنل تنظیمات -->
+  <div class="lg:col-span-4 bg-white dark:bg-slate-800 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700 p-6 h-fit sticky top-24">
+    <h2 class="text-xl font-bold mb-6 flex items-center gap-2"><span class="text-2xl">🎨</span> تنظیمات چیدمان</h2>
+    
+    <div class="space-y-5">
+      <!-- آپلود عکس -->
+      <div>
+        <label class="block text-sm font-bold mb-2 text-slate-700 dark:text-slate-300">۱. انتخاب تصویر</label>
+        <div class="relative group">
+            <input type="file" id="img-upload" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+            <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-4 text-center group-hover:border-sky-500 group-hover:bg-sky-50 dark:group-hover:bg-slate-700/50 transition-colors">
+                <span id="file-name-display" class="text-sm text-slate-500 dark:text-slate-400 font-medium">کلیک کنید، فایل را رها کنید یا Ctrl+V کنید</span>
+            </div>
+        </div>
+      </div>
+
+      <!-- اندازه کاغذ -->
+      <div>
+        <label class="block text-sm font-bold mb-2 text-slate-700 dark:text-slate-300">۲. اندازه کاغذ</label>
+        <select id="paper-size" class="w-full border-2 border-slate-200 dark:border-slate-600 rounded-xl p-3 bg-slate-50 dark:bg-slate-700/50 focus:border-sky-500 outline-none">
+          <option value="A4">A4 (۲۱۰ × ۲۹۷ میلی‌متر)</option>
+          <option value="A5">A5 (۱۴۸ × ۲۱۰ میلی‌متر)</option>
+          <option value="Letter">Letter (۲۱۶ × ۲۷۹ میلی‌متر)</option>
+        </select>
+      </div>
+
+      <!-- اندازه تصویر -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold mb-2 text-slate-500">عرض تصویر (mm)</label>
+          <input type="number" id="img-width" value="50" min="1" class="w-full border-2 border-slate-200 dark:border-slate-600 rounded-xl p-2 bg-slate-50 dark:bg-slate-700/50 focus:border-sky-500 outline-none text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold mb-2 text-slate-500">ارتفاع تصویر (mm)</label>
+          <input type="number" id="img-height" value="50" min="1" class="w-full border-2 border-slate-200 dark:border-slate-600 rounded-xl p-2 bg-slate-50 dark:bg-slate-700/50 focus:border-sky-500 outline-none text-sm">
+        </div>
+      </div>
+
+      <!-- دکمه‌های آینه کردن -->
+      <div class="grid grid-cols-2 gap-4">
+        <button id="btn-flip-h" class="bg-slate-100 dark:bg-slate-700 hover:bg-sky-100 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-sm font-bold border-2 border-transparent transition-all flex justify-center items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+          آینه افقی
+        </button>
+        <button id="btn-flip-v" class="bg-slate-100 dark:bg-slate-700 hover:bg-sky-100 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-sm font-bold border-2 border-transparent transition-all flex justify-center items-center gap-2">
+          <svg class="w-5 h-5 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+          آینه عمودی
+        </button>
+      </div>
+
+      <!-- حاشیه‌ها -->
+      <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-4">
+        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">۳. موقعیت روی کاغذ (mm)</label>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-bold mb-1 text-slate-500">فاصله از بالا</label>
+                <input type="number" id="pos-top" value="10" min="0" class="w-full border-2 border-slate-200 dark:border-slate-600 rounded-lg p-2 bg-white dark:bg-slate-800 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1 text-slate-500">فاصله از چپ</label>
+                <input type="number" id="pos-left" value="10" min="0" class="w-full border-2 border-slate-200 dark:border-slate-600 rounded-lg p-2 bg-white dark:bg-slate-800 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1 text-slate-500">فاصله از راست</label>
+                <input type="number" id="pos-right" value="10" min="0" class="w-full border-2 border-slate-200 dark:border-slate-600 rounded-lg p-2 bg-white dark:bg-slate-800 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1 text-slate-500">فاصله از پایین</label>
+                <input type="number" id="pos-bottom" value="10" min="0" class="w-full border-2 border-slate-200 dark:border-slate-600 rounded-lg p-2 bg-white dark:bg-slate-800 text-sm">
+            </div>
+        </div>
+      </div>
+
+      <button id="submit-btn" class="w-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white px-6 py-4 rounded-2xl font-bold shadow-lg shadow-sky-500/30 transition-all active:scale-95 flex justify-center items-center gap-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        ذخیره و رفتن به چاپ
+      </button>
+    </div>
+  </div>
+
+  <!-- پیش‌نمایش زنده -->
+  <div id="preview-container" class="lg:col-span-8 bg-white dark:bg-slate-800 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border-2 border-transparent transition-all duration-300 p-6 flex flex-col items-center justify-center min-h-[600px] relative overflow-hidden">
+    
+    <!-- لایه کشیدن و رها کردن (Drag & Drop Overlay) -->
+    <div id="drop-overlay" class="absolute inset-0 bg-sky-500/10 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl flex flex-col items-center gap-4 border-2 border-sky-500 border-dashed">
+            <svg class="w-16 h-16 text-sky-500 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+            <span class="text-xl font-bold text-slate-700 dark:text-slate-200">فایل را اینجا رها کنید!</span>
+        </div>
+    </div>
+
+    <div class="absolute top-6 right-6 bg-slate-900/80 text-white px-4 py-2 rounded-xl text-sm font-bold backdrop-blur-md z-10 flex items-center gap-2 shadow-lg">
+        <span class="w-3 h-3 rounded-full bg-red-500 animate-pulse"></span>
+        پیش‌نمایش زنده
+    </div>
+    
+    <div class="relative w-full h-full flex items-center justify-center p-8 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700">
+        <div id="paper-canvas" class="bg-white shadow-2xl relative overflow-hidden transition-all duration-300" style="width: 300px; height: 424px;">
+            <img id="preview-img" class="absolute hidden object-contain" style="width: 50px; height: 50px; top: 10px; left: 10px; transform-origin: top left;">
+            <div id="guide-top" class="absolute border-t border-dashed border-sky-300 w-full pointer-events-none" style="top: 10px;"></div>
+            <div id="guide-left" class="absolute border-r border-dashed border-sky-300 h-full pointer-events-none" style="left: 10px;"></div>
+            <div id="guide-right" class="absolute border-l border-dashed border-sky-300 h-full pointer-events-none" style="right: 10px;"></div>
+            <div id="guide-bottom" class="absolute border-b border-dashed border-sky-300 w-full pointer-events-none" style="bottom: 10px;"></div>
+        </div>
+    </div>
+    <p class="text-xs text-slate-400 mt-4 text-center">مقیاس تصویر برای نمایش است. تنظیمات به میلی‌متر روی فایل نهایی PDF اعمال می‌شود.</p>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const imgUpload = document.getElementById('img-upload');
+    const fileDisplay = document.getElementById('file-name-display');
+    const paperCanvas = document.getElementById('paper-canvas');
+    const previewImg = document.getElementById('preview-img');
+    const submitBtn = document.getElementById('submit-btn');
+    const previewContainer = document.getElementById('preview-container');
+    const dropOverlay = document.getElementById('drop-overlay');
+    
+    const paperSizeSelect = document.getElementById('paper-size');
+    const imgWidthInput = document.getElementById('img-width');
+    const imgHeightInput = document.getElementById('img-height');
+    const posTopInput = document.getElementById('pos-top');
+    const posLeftInput = document.getElementById('pos-left');
+    const posRightInput = document.getElementById('pos-right');
+    const posBottomInput = document.getElementById('pos-bottom');
+    
+    const guideTop = document.getElementById('guide-top');
+    const guideLeft = document.getElementById('guide-left');
+    const guideRight = document.getElementById('guide-right');
+    const guideBottom = document.getElementById('guide-bottom');
+
+    const btnFlipH = document.getElementById('btn-flip-h');
+    const btnFlipV = document.getElementById('btn-flip-v');
+
+    const paperSizes = { 'A4': { w: 210, h: 297 }, 'A5': { w: 148, h: 210 }, 'Letter': { w: 216, h: 279 } };
+
+    let currentImageFile = null;
+    let scaleFactor = 1;
+    let flipH = false;
+    let flipV = false;
+
+    function updatePaperCanvas() {
+        const size = paperSizes[paperSizeSelect.value];
+        scaleFactor = 300 / size.w;
+        paperCanvas.style.width = `${size.w * scaleFactor}px`;
+        paperCanvas.style.height = `${size.h * scaleFactor}px`;
+        updateImagePosition();
+    }
+
+    function updateImagePosition() {
+        const w = parseFloat(imgWidthInput.value) || 0;
+        const h = parseFloat(imgHeightInput.value) || 0;
+        const top = parseFloat(posTopInput.value) || 0;
+        const left = parseFloat(posLeftInput.value) || 0;
+        const right = parseFloat(posRightInput.value) || 0;
+        const bottom = parseFloat(posBottomInput.value) || 0;
+
+        // اعمال آینه کردن با CSS Transform
+        let scaleX = flipH ? -1 : 1;
+        let scaleY = flipV ? -1 : 1;
+        previewImg.style.transform = `scale(${scaleX}, ${scaleY})`;
+
+        previewImg.style.width = `${w * scaleFactor}px`;
+        previewImg.style.height = `${h * scaleFactor}px`;
+        previewImg.style.top = `${top * scaleFactor}px`;
+        
+        // اگر افقی آینه شده باشد، باید مختصات چپ را کمی تنظیم کنیم تا از کادر بیرون نزند
+        if (flipH) {
+            previewImg.style.left = `${(left + w) * scaleFactor}px`; 
+        } else {
+            previewImg.style.left = `${left * scaleFactor}px`;
+        }
+
+        guideTop.style.top = `${top * scaleFactor}px`;
+        guideLeft.style.left = `${left * scaleFactor}px`;
+        guideRight.style.right = `${right * scaleFactor}px`;
+        guideBottom.style.bottom = `${bottom * scaleFactor}px`;
+    }
+
+    function handleFile(file) {
+        if (!file.type.startsWith('image/')) {
+            showFloatingToast('لطفا فقط فایل عکس انتخاب کنید', true);
+            return;
+        }
+        currentImageFile = file;
+        fileDisplay.textContent = file.name;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            previewImg.src = event.target.result;
+            previewImg.classList.remove('hidden');
+            submitBtn.disabled = false;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // رویدادهای انتخاب فایل معمولی
+    imgUpload.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) handleFile(e.target.files[0]);
+    });
+
+    // ۱. پشتیبانی از Drag & Drop
+    previewContainer.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropOverlay.classList.remove('opacity-0', 'pointer-events-none');
+        previewContainer.classList.add('border-sky-500', 'shadow-sky-500/20');
+    });
+
+    previewContainer.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        dropOverlay.classList.add('opacity-0', 'pointer-events-none');
+        previewContainer.classList.remove('border-sky-500', 'shadow-sky-500/20');
+    });
+
+    previewContainer.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropOverlay.classList.add('opacity-0', 'pointer-events-none');
+        previewContainer.classList.remove('border-sky-500', 'shadow-sky-500/20');
+        
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleFile(e.dataTransfer.files[0]);
+            showFloatingToast('📸 عکس با موفقیت بارگذاری شد!', false);
+        }
+    });
+
+    // ۲. پشتیبانی از Clipboard (Ctrl+V)
+    document.addEventListener('paste', (e) => {
+        let items = e.clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                let blob = items[i].getAsFile();
+                let file = new File([blob], `pasted_image_${Date.now()}.png`, { type: blob.type });
+                handleFile(file);
+                showFloatingToast('📸 عکس از کلیپ‌بورد پیست شد!', false);
+                break;
+            }
+        }
+    });
+
+    // ۳. دکمه‌های آینه کردن
+    btnFlipH.addEventListener('click', () => {
+        flipH = !flipH;
+        btnFlipH.classList.toggle('border-sky-500', flipH);
+        btnFlipH.classList.toggle('text-sky-600', flipH);
+        updateImagePosition();
+    });
+
+    btnFlipV.addEventListener('click', () => {
+        flipV = !flipV;
+        btnFlipV.classList.toggle('border-sky-500', flipV);
+        btnFlipV.classList.toggle('text-sky-600', flipV);
+        updateImagePosition();
+    });
+
+    paperSizeSelect.addEventListener('change', updatePaperCanvas);
+    [imgWidthInput, imgHeightInput, posTopInput, posLeftInput, posRightInput, posBottomInput].forEach(input => {
+        input.addEventListener('input', updateImagePosition);
+    });
+
+    updatePaperCanvas();
+
+    // ارسال به بک‌اند
+    submitBtn.addEventListener('click', async function() {
+        if (!currentImageFile) return;
+        
+        submitBtn.innerHTML = 'در حال پردازش...';
+        submitBtn.disabled = true;
+
+        const payload = {
+            filename: currentImageFile.name,
+            paper_size: paperSizeSelect.value,
+            width_mm: parseFloat(imgWidthInput.value),
+            height_mm: parseFloat(imgHeightInput.value),
+            top_mm: parseFloat(posTopInput.value),
+            left_mm: parseFloat(posLeftInput.value),
+            flip_h: flipH,
+            flip_v: flipV,
+            image: previewImg.src
+        };
+
+        try {
+            const response = await fetch('/layout/process', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                window.location.href = data.redirect;
+            } else {
+                showFloatingToast(data.error || 'خطا در پردازش', true);
+                submitBtn.innerHTML = 'ذخیره و رفتن به چاپ';
+                submitBtn.disabled = false;
+            }
+        } catch (error) {
+            showFloatingToast('خطا در ارتباط با سرور', true);
+            submitBtn.innerHTML = 'ذخیره و رفتن به چاپ';
+            submitBtn.disabled = false;
+        }
+    });
+</script>
+{% endblock %}
